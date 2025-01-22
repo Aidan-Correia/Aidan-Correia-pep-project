@@ -1,5 +1,6 @@
 package Controller;
 
+import Service.WebsiteService;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
@@ -9,6 +10,14 @@ import io.javalin.http.Context;
  * refer to prior mini-project labs and lecture materials for guidance on how a controller may be built.
  */
 public class SocialMediaController {
+    WebsiteService websiteService;
+    
+
+    public SocialMediaController()
+    {
+        websiteService = new WebsiteService();
+    }
+
     /**
      * In order for the test cases to work, you will need to write the endpoints in the startAPI() method, as the test
      * suite must receive a Javalin object from this method.
