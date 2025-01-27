@@ -1,8 +1,18 @@
 package Controller;
+import Model.*;
 
 import Service.WebsiteService;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
+
+import static org.mockito.ArgumentMatchers.nullable;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.List;
+import java.util.ArrayList;
+
 
 /**
  * TODO: You will need to write your own endpoints and handlers for your controller. The endpoints you will need can be
@@ -23,7 +33,8 @@ public class SocialMediaController {
      * suite must receive a Javalin object from this method.
      * @return a Javalin app object which defines the behavior of the Javalin controller.
      */
-    public Javalin startAPI() {
+    public Javalin startAPI()
+     {
         Javalin app = Javalin.create();
         app.post("/register", this::createAccountHandler);
         app.post("/login", this::loginHandler);
@@ -42,20 +53,58 @@ public class SocialMediaController {
      * This is an example handler for an example endpoint.
      * @param context The Javalin Context object manages information about both the HTTP request and response.
      */
-    private void createAccountHandler(Context context) {
-        context.json("sample text");
+    private void createAccountHandler(Context context) throws JsonProcessingException
+    {
+        ObjectMapper mapper = new ObjectMapper();
+        Account newAccount = mapper.readValue(context.body(), Account.class);
+        Account postedAccount = websiteService.registerAccount(newAccount);
+        if (postedAccount != null)
+        {
+            context.json(mapper.writeValueAsString(postedAccount));
+            context.status(200);
+        }
+        else
+        {
+            context.status(400);
+        }
+        
     }
 
-    private void loginHandler(Context context) {
-        context.json("sample text");
+    private void loginHandler(Context context) throws JsonProcessingException
+    {
+        ObjectMapper mapper = new ObjectMapper();
+        Account userAccount = mapper.readValue(context.body(), Account.class);
+        Account user = websiteService.login(userAccount);
+        if (user != null)
+        {
+            context.json(mapper.writeValueAsString(user));
+            context.status(200);
+        }
+        else
+        {
+            context.status(401);
+        }
     }
 
-    private void createMessageHandler(Context context) {
-        context.json("sample text");
+    private void createMessageHandler(Context context) throws JsonProcessingException 
+    {
+        ObjectMapper mapper = new ObjectMapper();
+        Message newMessage = mapper.readValue(context.body(), Message.class);
+        Message postedMessage = websiteService.createMessage(newMessage);
+        if (postedMessage != null)
+        {
+            context.json(mapper.writeValueAsString(postedMessage));
+            context.status(200);
+        }
+        else
+        {
+            context.status(400);
+        }
     }
 
     private void getAllMessagesHandler(Context context) {
-        context.json("sample text");
+        List<Message> posts = websiteService.retrieveAllMessages();
+        context.json(posts);
     }
 
     private void getMessageByIdHandler(Context context) {
