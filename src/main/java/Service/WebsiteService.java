@@ -106,22 +106,50 @@ public class WebsiteService {
 
     public Message retrieveMessage(int messageId)
     {
-        return null;
+        return messageDAO.getMessageById(messageId);
     }
 
     public Message deleteMessage(int messageId)
     {
-        return null;
+        return messageDAO.deleteMessageById(messageId);
     }
 
-    public Message updateMessage(int messageId)
+    private boolean checkValidUpdate(int messageId, String newText)
     {
+
+        if ((newText.length() < 1) || (newText.length() > 255))
+        {
+            return false;
+        }
+
+        List<Message> messages = messageDAO.retrieveAllMessages();
+        if (messages == null)
+        {
+            return false;
+        }
+        for(Message m : messages)
+        {
+            if (m.getMessage_id() == messageId)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Message updateMessage(int messageId, String newText)
+    {
+        if (checkValidUpdate(messageId, newText))
+        {
+            return messageDAO.updateMessageById(messageId, newText);
+        }
+
         return null;
     }
 
     public List<Message> retrieveMessagesByUser(int userId)
     {
-        return null;
+        return messageDAO.retrieveAllMessagesByUser(userId);
     }
 
 }

@@ -107,19 +107,48 @@ public class SocialMediaController {
         context.json(posts);
     }
 
-    private void getMessageByIdHandler(Context context) {
-        context.json("sample text");
+    private void getMessageByIdHandler(Context context) throws JsonProcessingException{
+        ObjectMapper mapper = new ObjectMapper();
+        int messageId = Integer.parseInt(context.pathParam("message_id"));
+        Message retrievedMessage = websiteService.retrieveMessage(messageId);
+        if (retrievedMessage != null)
+        {
+            context.json(mapper.writeValueAsString(retrievedMessage));
+        }
+        context.status(200);
     }
 
-    private void deleteMessageByIdHandler(Context context) {
-        context.json("sample text");
+    private void deleteMessageByIdHandler(Context context) throws JsonProcessingException{
+        ObjectMapper mapper = new ObjectMapper();
+        int messageId = Integer.parseInt(context.pathParam("message_id"));
+        Message deletedMessage = websiteService.deleteMessage(messageId);
+        if (deletedMessage != null)
+        {
+            context.json(mapper.writeValueAsString(deletedMessage));
+        }
+        context.status(200);
     }
 
-    private void updateMessageByIdHandler(Context context) {
-        context.json("sample text");
+    private void updateMessageByIdHandler(Context context) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        int messageId = Integer.parseInt(context.pathParam("message_id"));
+        System.out.println(context.body());
+        String newText = mapper.readValue(context.body(), Message.class).getMessage_text();
+        Message updatedMessage = websiteService.updateMessage(messageId, newText);
+        if (updatedMessage != null)
+        {
+            context.json(mapper.writeValueAsString(updatedMessage));
+            context.status(200);
+        }
+        else
+        {
+            context.status(400);
+        }
     }
 
     private void getAllMessagesByUserHandler(Context context) {
-        context.json("sample text");
+        int userId = Integer.parseInt(context.pathParam("account_id"));
+        List<Message> messagesFromUser = websiteService.retrieveMessagesByUser(userId);
+        context.json(messagesFromUser);
     }
 }
